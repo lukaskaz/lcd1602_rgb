@@ -90,12 +90,8 @@ int main(int argc, char* argv[])
     
     lcd.setColor(colorR, colorG, colorB);
 
-    // Print a message to the LCD.
-    char logged_user[16+1] = {0};
-    
-    snprintf(logged_user, sizeof(logged_user), "Logged %s", user_name);
     lcd.setCursor(0, 0);
-    lcd.print(logged_user);
+    lcd.print(std::string("Logged: ") + user_name);
     char dgr[3] = {0};
     dgr[0] = 0xDF;
     dgr[1] = 'C';
