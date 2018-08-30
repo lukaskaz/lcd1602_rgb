@@ -99,13 +99,7 @@ int main(int argc, char* argv[])
     char dgr[3] = {0};
     dgr[0] = 0xDF;
     dgr[1] = 'C';
-    lcd.print(dgr);
-
-    //lcd.setCursor(5, 0);
-    //lcd.setLCDDisplayCtrl(LCD_DISPLAYON|LCD_CURSORON|LCD_BLINKON);
-    //lcd.blinkLED();
-    //while(1);
-    
+    lcd.print(dgr);  
     
     char ticking_time[16+1] = { 0 };
     int time = 0;
@@ -138,8 +132,7 @@ int main(int argc, char* argv[])
         lcd.scroll(RGBLCD::SCROLL_CURS_LEFT, 5, 500);
         lcd.scroll(RGBLCD::SCROLL_CURS_RIGHT, 7, 500);
         lcd.display(RGBLCD::CURSOR_HIDE);
-        
-A1:
+
         lcd.clear();
         lcd.textEntry(RGBLCD::ENTRY_LEFTTORIGHT);
         lcd.setCursor(0, 0);
