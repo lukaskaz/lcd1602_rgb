@@ -12,7 +12,7 @@ class RGBLCD :
     public RGB
 {
 public:
-    static RGBLCD& get_instance(void) { static RGBLCD instance; return instance; };
+    static RGBLCD& get_instance(void);
 
 private:
     RGBLCD();

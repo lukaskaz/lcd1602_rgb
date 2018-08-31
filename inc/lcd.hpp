@@ -14,7 +14,7 @@ class LCD :
 {
 public:
     LCD(const std::string& i2c_bus, uint8_t i2c_addr) :
-                        I2C(i2c_bus, i2c_addr), Delay() { };
+                        I2C(i2c_bus, i2c_addr), Delay() { clearVariables(); };
 
     enum scroll_t    { SCROLL_CURS_LEFT = 0, SCROLL_CURS_RIGHT,
                        SCROLL_TEXT_LEFT,     SCROLL_TEXT_RIGHT };
@@ -23,39 +23,27 @@ public:
                        ENTRY_AUTOSCROLL,      ENTRY_NOAUTOSCROLL };
 
     enum display_t   { DISPLAY_ON = 0, DISPLAY_OFF, CURSOR_SHOW,
-                       CURSOR_HIDE, CURSOR_BLINK, CURSOR_NOBLINK };
+                       CURSOR_HIDE, CURSOR_BLINK, CURSOR_NOBLINK }; 
 
-    void init();
-    
-    return_t getDisplaySet(display_t selection, uint8_t& set);
     return_t display(display_t selection);
-
-    return_t getScrollSet(scroll_t selection, uint8_t& set);
     return_t scroll(scroll_t selection, uint32_t moveNb, uint32_t moveDelayMs);
-
-    return_t getTextEntrySet(textEntry_t selection, uint8_t& set);
     return_t textEntry(textEntry_t selection);
 
     void setCustomSymbol(uint8_t, uint8_t*);
     void setCursor(uint8_t, uint8_t);  
 
-    void instruction(uint8_t);
-
     void print(const std::string& str);
-
-    size_t writeRAM(std::vector<uint8_t>& data);
-
-    int setFunctionSet(uint8_t set);
-    int setDisplayCtrl(uint8_t set);
-    int setEntryModeSet(uint8_t set);
-    return_t setCursDispShift(uint8_t set);
 
     int clear(void);
     int home(void);
 
-    void setParameters(uint8_t cols, uint8_t rows)
-                            { _cols = cols; _rows = rows; };
+    void setDispSize(uint8_t colsNb, uint8_t rowsNb)
+                            { columns = colsNb; rows = rowsNb; }
 
+protected:
+    void init();
+    bool isDispSizeInitialized(void)
+            { if( columns != 0 && rows != 0) return true; return false; }
 
 private:
     enum instr_t     { INSTR_CLR_DISPLAY   = 0x01, INST_RET_HOME      = 0x02,
@@ -84,13 +72,27 @@ private:
 
     enum cursLine_t  { CURS_LINE_1 = 0x80, CURS_LINE_2 = 0xC0 };
 
-
     uint8_t funcSetState;
     uint8_t dispCtrlStatus;
     uint8_t entryModeSetState;
 
-    uint8_t _cols;
-    uint8_t _rows;
+    uint8_t columns;
+    uint8_t rows;
+    
+    void clearVariables(void) { funcSetState = 0; dispCtrlStatus = 0;
+                        entryModeSetState = 0; columns = 0; rows = 0; }
+
+    return_t setFunctionSet(uint8_t set);
+    return_t setDisplayCtrl(uint8_t set);
+    return_t setEntryModeSet(uint8_t set);
+    return_t setCursDispShift(uint8_t set);
+
+    return_t getDisplaySet(display_t selection, uint8_t& set);
+    return_t getScrollSet(scroll_t selection, uint8_t& set);
+    return_t getTextEntrySet(textEntry_t selection, uint8_t& set);
+
+    size_t writeData(std::vector<uint8_t>& data);
+    void writeInstr(uint8_t);
 
     void send(uint8_t* data, uint8_t size) const;
 };

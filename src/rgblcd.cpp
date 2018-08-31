@@ -22,8 +22,16 @@ RGBLCD::RGBLCD():
 
 RGBLCD::~RGBLCD()
 {
-    LCD::clear();
+    clear();
+    display(DISPLAY_OFF);
+
     setColor(RGB_NONE);
+}
+
+RGBLCD& RGBLCD::get_instance(void)
+{
+    static RGBLCD instance;
+    return instance;
 }
 
 /*******************************private*******************************/

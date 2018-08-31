@@ -130,7 +130,7 @@ return_t LCD::textEntry(textEntry_t selection)
 void LCD::setCustomSymbol(uint8_t location, uint8_t* charmap)
 {
     location &= 0x7; // we only have 8 locations 0-7
-    instruction(INSTR_SETCGRAMADDR | (location << 3));
+    writeInstr(INSTR_SETCGRAMADDR | (location << 3));
 
     uint8_t data[9] = {0};
     data[0] = INSTR_CTRL_RS_DATA_REG | INSTR_CTRL_SINGLE_CMD;
@@ -142,17 +142,17 @@ void LCD::setCustomSymbol(uint8_t location, uint8_t* charmap)
     send(data, sizeof(data));
 }
 
-void LCD::setCursor(uint8_t row, uint8_t column)
+void LCD::setCursor(uint8_t row, uint8_t col)
 {
-    if(row < _rows && column < _cols) {
+    if(row < rows && col < columns) {
         uint8_t pos = (row == 0) ? CURS_LINE_1 : CURS_LINE_2;
 
-        pos |= column;
-        instruction(pos);
+        pos |= col;
+        writeInstr(pos);
     }
 }
 
-size_t LCD::writeRAM(std::vector<uint8_t>& data)
+size_t LCD::writeData(std::vector<uint8_t>& data)
 {
     uint8_t ctrlByte = INSTR_CTRL_RS_DATA_REG | INSTR_CTRL_SINGLE_CMD;
 
@@ -161,7 +161,7 @@ size_t LCD::writeRAM(std::vector<uint8_t>& data)
     return 1; // assume sucess
 }
 
-inline void LCD::instruction(uint8_t value)
+inline void LCD::writeInstr(uint8_t value)
 {
     uint8_t ctrlByte = INSTR_CTRL_RS_INSTR_REG | INSTR_CTRL_SINGLE_CMD;
     uint8_t data[] = { ctrlByte, value };
@@ -171,53 +171,44 @@ inline void LCD::instruction(uint8_t value)
 void LCD::print(const std::string& str)
 {
     std::vector<uint8_t> data(str.begin(), str.end());
-    writeRAM(data);
+    writeData(data);
 }
 
-typedef enum {
-    CMD_GROUP_UNDEF = 0,
-    CMD_GROUP_DISPLAY_CLEAR,
-    CMD_GROUP_MODE_SET,
-    CMD_GROUP_DISPLAY_CTRL,
-    CMD_GROUP_DISPLAY_SHIFT,
-    CMD_GROUP_FUNCTION_SET   
-} LCD_Cmd_Group_t;
-
-int LCD::setFunctionSet(uint8_t set)
+return_t  LCD::setFunctionSet(uint8_t set)
 {
-    int ret = (-1);
+    return_t ret = RET_FAIL;
     uint8_t cmd = INSTR_FUNCSET | set;
 
     funcSetState = set;
-    instruction(cmd);
+    writeInstr(cmd);
     wait(DELAY_USEC, 40);  //Execution time ~40us
 
-    ret = 0;
+    ret = RET_SUCCESS;
     return ret;
 }
 
-int LCD::setDisplayCtrl(uint8_t set)
+return_t LCD::setDisplayCtrl(uint8_t set)
 {
-    int ret = (-1);
+    return_t ret = RET_FAIL;
 
     dispCtrlStatus = INSTR_DISPCONTROL | set;
-    instruction(dispCtrlStatus);
+    writeInstr(dispCtrlStatus);
     wait(DELAY_USEC, 40);   //Execution time ~40us
 
-    ret = 0;
+    ret = RET_SUCCESS;
     return ret;
 }
 
-int LCD::setEntryModeSet(uint8_t set)
+return_t LCD::setEntryModeSet(uint8_t set)
 {
-    int ret = (-1);
+    return_t ret = RET_FAIL;
     uint8_t cmd = INSTR_ENTRYMODESET | set;
 
     entryModeSetState = set;
-    instruction(cmd);
+    writeInstr(cmd);
     wait(DELAY_USEC, 40);   //Execution time ~40us
 
-    ret = 0;
+    ret = RET_SUCCESS;
     return ret;
 }
 
@@ -226,7 +217,7 @@ return_t LCD::setCursDispShift(uint8_t set)
     return_t ret = RET_FAIL;
     uint8_t cmd = INSTR_CURSDISPSHIFT | set;
 
-    instruction(cmd);
+    writeInstr(cmd);
     wait(DELAY_USEC, 40);   //Execution time ~40us
 
     ret = RET_SUCCESS;
@@ -238,7 +229,7 @@ int LCD::clear(void)
     int ret = (-1);
     uint8_t cmd = INSTR_CLR_DISPLAY;
 
-    instruction(cmd);
+    writeInstr(cmd);
     wait(DELAY_MSEC, 2);   //Execution time ~2ms
 
     ret = 0;
@@ -250,7 +241,7 @@ int LCD::home(void)
     int ret = (-1);
     uint8_t cmd = INST_RET_HOME;
 
-    instruction(cmd);
+    writeInstr(cmd);
     wait(DELAY_MSEC, 2);   //Execution time ~2ms
 
     ret = 0;

@@ -22,20 +22,21 @@ public:
     RGB(const std::string& i2c_bus, uint8_t i2c_addr) :
                             I2C(i2c_bus, i2c_addr), Delay() { };
 
-    void init();
-
     void backlightBlink(RGB_blink_t state);
     void setBright(RGB_bright_t level);
     void setColor(RGB_color_t color);
     void setColor(uint8_t r_val, uint8_t g_val, uint8_t b_val);
     void setColor(RGB_color_id_t colorId, uint8_t pwmVal);
 
-private:
-    void send(uint8_t* data, uint8_t size);
+protected:
+    void init();
 
+private:
     void setMode1Reg(uint8_t value);
     void setMode2Reg(uint8_t value);
     void setDrvCtrlReg(uint8_t value);
+
+    void send(uint8_t* data, uint8_t size);
 };
 
 #endif
