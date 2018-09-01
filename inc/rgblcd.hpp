@@ -13,6 +13,7 @@ class RGBLCD :
 {
 public:
     static RGBLCD& get_instance(void);
+    static RGBLCD& get_instance(uint8_t cols, uint8_t rows);
 
 private:
     RGBLCD();

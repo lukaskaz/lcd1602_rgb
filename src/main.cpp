@@ -82,12 +82,10 @@ int main(int argc, char* argv[])
 
     console.log("Given username: '" + std::string(user_name) + "'");
 
-    RGBLCD& lcd = RGBLCD::get_instance();
-    lcd.setDispSize(16, 2);
-
+    RGBLCD& lcd = RGBLCD::get_instance(16, 2);
     Delay delay;
+
     delay.wait(Delay::DELAY_SEC, 1);
-    
     lcd.setColor(colorR, colorG, colorB);
 
     lcd.setCursor(0, 0);
