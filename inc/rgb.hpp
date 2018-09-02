@@ -7,8 +7,7 @@
 
 
 class RGB : 
-    private I2C,
-    private Delay
+    private I2C
 {
 public:
     enum RGB_color_t    { RGB_NONE = 0, RGB_WHITE, RGB_BLUE, RGB_GREEN, RGB_RED };
@@ -20,7 +19,7 @@ public:
                           RGB_BRIGHT_FULL = 0xFF };
  
     RGB(const std::string& i2c_bus, uint8_t i2c_addr) :
-                            I2C(i2c_bus, i2c_addr), Delay() { };
+                            I2C(i2c_bus, i2c_addr) { };
 
     void backlightBlink(RGB_blink_t state);
     void setBright(RGB_bright_t level);
